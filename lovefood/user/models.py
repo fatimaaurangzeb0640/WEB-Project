@@ -63,7 +63,8 @@ class Seller(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length = 50)
     contact = models.PositiveIntegerField(default=123)
-    homeornot = models.CharField(max_length=1, default='Y')
+    homeornot = models.BooleanField(default=False)
+    #homeornot = models.CharField(max_length=1, default='Y')
     avg_rating = models.FloatField(default=0)
     
     def __str__(self):

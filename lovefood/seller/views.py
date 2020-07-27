@@ -20,16 +20,6 @@ def index(request):
     seller_name = str(user.seller.name)
     return HttpResponseRedirect(reverse("seller", args=(seller_name,)))
 
-    '''
-    user = User.objects.get(email=request.user.email)
-    seller_name = str(user.seller.name)
-    context = {
-        "seller_name" : seller_name
-    }
-    return render(request, 'seller/seller.html', context)
-    '''
-
-
 def login_seller(request):
     email = request.POST.get("email")
     password = request.POST.get("password")
@@ -54,10 +44,8 @@ def logout_seller(request):
     return JsonResponse({"logout": True})
 
 def seller(request, seller_name):
-   # user = User.objects.get(email='f')
-   # seller_name = str(user.seller.name)
     context = {
-        "seller_name" : seller_name
+        "seller_name" : seller_name, 
     }
     return render(request, 'seller/seller.html', context)
 
@@ -72,7 +60,10 @@ def register_seller(request):
         contact = request.POST.get('contact')
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
-        homeornot = request.POST.get('homeornot')
+        home = request.POST.get('homeornot')
+        homeornot = False
+        if home == 'yes':
+            homeornot = True
 
         if password == confirm_password:
             try:
@@ -89,9 +80,6 @@ def register_seller(request):
                 user = User.objects.get(email=request.user.email)
                 seller_name = str(user.seller.name)
                 return HttpResponseRedirect(reverse("seller", args=(seller_name,)))
-
-
-                #return HttpResponseRedirect(reverse('login_seller'))
         else:
             messages.error(request, "Passwords do not match")
             return  JsonResponse({"Passwords do not match": True})
@@ -103,39 +91,36 @@ def getlist(request, seller_name):
     itemlist = []
     user = User.objects.get(email=request.user.email)
     seller = user.seller
-    count = str(seller.cooks.all().count())
-    for i in range(1, int(count) + 1):
-        dish = seller.cooks.get(pk=i)
-        dish_name = dish.name
-        itemlist.append(dish_name)
-    
+    dishes = seller.cooks.all()
+    count = str(dishes.count())
+
+    for i in range(0, int(count)):
+        itemlist.append(str(dishes[i].name))
+
     return JsonResponse({
         "itemlist": itemlist
     })
 
 
-
-
-
-def getitems(request, seller_name):
-    
+def getitem(request, seller_name, dish_name):
     user = User.objects.get(email=request.user.email)
     seller = user.seller
-    count = str(seller.cooks.all().count())
-    items = [
-        {
-        "name":"abc", 
-        "summary":"abc", 
-        "nationality":"abc", 
-        "no_of_serving":0, 
-        "picture":"xyz.jpg",
-        "glutten_free":"N",
-        "customizable":"N"
-     }]
-    for i in range(1, int(count) + 1):
-        item = seller.cooks.get(pk=i)
-        items.append({"name" : str(item.name), "summary" : str(item.summary), "nationality" : str(item.nationality), "no_of_serving" : int(item.no_of_serving),"picture" : str(item.picture), "category" : str(item.category) , "glutten_free" : str(item.glutten_free), "customizable" : str(item.customizable)})
-    #items = seller.cooks.all()
+    dish = seller.cooks.get(name=dish_name)
+    glutten_free = "No"
+    customizable = "No"
+    if dish.glutten_free == True:
+        glutten_free = "Yes" 
+    
+    if dish.customizable == True:
+        customizable = "Yes" 
+
+    item = {"name" : str(dish.name), "summary" : str(dish.summary), "nationality" : str(dish.nationality), "no_of_serving" : int(dish.no_of_serving),"picture" : str(dish.picture), "category" : str(dish.category) , "glutten_free" : glutten_free, "customizable" : customizable}
     return JsonResponse({
-        "items": items
+        "item": item
     })
+
+#def item(request, seller_name, dish_name):
+#    return render(request, 'seller/dish.html')
+
+def additem(request, seller_name):
+    return render(request, 'seller/additem.html')

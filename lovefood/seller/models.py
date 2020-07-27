@@ -12,8 +12,10 @@ class Dish(models.Model):
     no_of_serving =models.IntegerField()
     picture = models.CharField(max_length=64)
     category = models.CharField(max_length=64)
-    glutten_free = models.CharField(max_length=1)
-    customizable = models.CharField(max_length=1)
+   # glutten_free = models.CharField(max_length=1)
+   # customizable = models.CharField(max_length=1)
+    glutten_free = models.BooleanField(default=False)
+    customizable = models.BooleanField(default=False)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, related_name="cooks", default='DEFAULT VALUE' )
 
     def __str__(self):
