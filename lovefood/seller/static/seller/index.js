@@ -27,7 +27,7 @@ function addlistmemeber(member) {
     const list = document.getElementById('dish-list');
     itemdiv = document.createElement('div');
     item = document.createElement('a');
-    item.innerHTML = member;
+    item.innerHTML = member["dish_id"] + ": " + member["dish_name"];
     item.className = "dish-list-item";
     item.href = "#";
     itemdiv.append(item);
@@ -38,26 +38,36 @@ document.addEventListener('click', event => {
 
     const element = event.target;
     if (element.className === 'dish-list-item') {
-        itemdiv = element.parentElement;
+        //itemdiv = element.parentElement;
         dish_name = element.innerHTML;
         seller = document.getElementById('seller-name').innerHTML;
-        console.log(seller, dish_name);
-        getItem(seller, dish_name);
+        console.log(dish_name);
+        count = 0;
+        for (i = 0; i <= dish_name.length; i++) {
+            if (dish_name.charAt(i) === ":") {
+                break;
+            }
+            count++;
+            console.log(count);
+        }
+        dish_id = dish_name.substring(0, count);
+        console.log(dish_id);
+        getItem(seller, dish_name, dish_id);
     }
 });
-function getItem(seller, dish_name) {
-    fetch(`${seller}/get${dish_name}`)
+function getItem(seller, dish_name, dish_id) {
+    fetch(`${seller}/get${dish_id}`)
         .then(response => {
             console.log('Response:', response)
             return response.json();
         })
         .then(data => {
-            addItem(data.item);
+            addItem(data.item, seller, dish_id);
 
         })
 };
 
-function addItem(content) {
+function addItem(content, seller, dish_id) {
     console.log(content["name"]);
     console.log(content["summary"]);
     console.log(content["nationality"]);
@@ -125,15 +135,32 @@ function addItem(content) {
     dish.append(glutten_freediv);
     dish.append(customizablediv);
     console.log("appended to main div");
+    display_items(seller, content["name"], dish_id);
     //console.log(document.getElementById('testing').innerHTML);
 }
 
 
-function display_items(seller, dish_name) {
+function display_items(seller, dish_name, dish_id) {
     // Open new request to get render page.
-    const request = new XMLHttpRequest();
-    request.open('GET', '/' + seller + '/' + dish_name);
-    request.onload = () => { };
-    request.send();
+    console.log("ok");
 
+    const request = new XMLHttpRequest();
+    // request.open('GET', '/seller/' + seller + '/' + dish_name);
+    request.open(`GET`, `/seller/${seller}/get_dish_no_${dish_id}`, true);
+    //request.open('GET', `/price/${item_name}/${size}`, true)
+    request.onload = () => { window.location.replace(`${seller}/${dish_id}`) };
+    request.send();
+    console.log("ok2")
 }
+/*
+          const request = new XMLHttpRequest();
+          request.open('POST', '/retrievemessages');
+          request.onload = () => {
+              const data = JSON.parse(request.responseText);
+              data.forEach(add_message);
+          };
+          const data = new FormData();
+          data.append('channel', channel)
+
+          request.send(data);
+*/

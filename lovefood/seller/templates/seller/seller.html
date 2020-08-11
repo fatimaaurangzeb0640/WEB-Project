@@ -1,6 +1,9 @@
 {% extends "seller/layout.html"%}
 {% load static %}
 {% block content %}
+<form method="get" action="{% url 'logout_seller' %}">
+    <button id="logout">Logout</button>
+</form>
 <h1>Welcome to your account <span id="seller-name">{{ seller_name }}</span>!</h1>
 <form method="get" action="{% url 'additem' seller_name %}">
     <!-- {% csrf_token %} -->

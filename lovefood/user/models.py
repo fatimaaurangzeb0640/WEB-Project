@@ -66,6 +66,7 @@ class Seller(models.Model):
     homeornot = models.BooleanField(default=False)
     #homeornot = models.CharField(max_length=1, default='Y')
     avg_rating = models.FloatField(default=0)
+    category = models.CharField(max_length=100, default='Fast food')
     
     def __str__(self):
         return f"{self.user}, {self.name}, {self.address}, {self.contact}"
